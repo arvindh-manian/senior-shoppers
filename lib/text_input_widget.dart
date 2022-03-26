@@ -39,10 +39,10 @@ class _TextInputWidgetState extends State<TextInputWidget> {
                         : null,
                     decoration: InputDecoration(
                       labelText: (index == 0)
-                          ? "Item name"
+                          ? "Item"
                           : (index == 1)
-                              ? "Item quantity (numbers only)"
-                              : "Item unit (if necessary)",
+                              ? "Quantity (numbers only)"
+                              : "Unit (if necessary)",
                     )));
           }),
           IconButton(
