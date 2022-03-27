@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'utils/cart_tools.dart';
 import 'text_input_widget.dart';
 
 class OrderingPage extends StatefulWidget {
-  final String name;
+  final GoogleSignInAccount? user;
 
-  OrderingPage(this.name);
+  OrderingPage(this.user);
 
   @override
   _OrderingPageState createState() => _OrderingPageState();
