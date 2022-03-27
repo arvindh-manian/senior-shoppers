@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'database.dart';
 import 'utils/cart_tools.dart';
 import 'text_input_widget.dart';
 
 class OrderingPage extends StatefulWidget {
   final GoogleSignInAccount? user;
-
-  OrderingPage(this.user);
+  late Cart cart;
+  OrderingPage(this.user) {
+    cart = Cart(user?.id, <CartItem>[]);
+  }
 
   @override
   _OrderingPageState createState() => _OrderingPageState();
 }
 
 class _OrderingPageState extends State<OrderingPage> {
-  List<CartItem> cart = [];
-
   void newItem(List<String> text) {
     setState(() {
-      cart.add(
+      widget.cart.listItems.add(
           CartItem(name: text[0], quantity: int.parse(text[1]), unit: text[2]));
     });
+  }
+
+  void sendCart() {
+    widget.cart.setId(saveCart(widget.cart));
+    print("success");
   }
 
   @override
@@ -28,8 +34,8 @@ class _OrderingPageState extends State<OrderingPage> {
         appBar: AppBar(title: Text("Senior Shoppers")),
         body: Column(
           children: <Widget>[
-            Expanded(child: CartList(cart)),
-            TextInputWidget(newItem),
+            Expanded(child: CartList(widget.cart)),
+            TextInputWidget(newItem, sendCart),
           ],
         ));
   }

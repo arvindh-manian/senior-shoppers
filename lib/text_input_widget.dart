@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:senior_shoppers/utils/cart_tools.dart';
 
 class TextInputWidget extends StatefulWidget {
-  final Function(List<String>) callback;
+  final Function(List<String>) newItemCallback;
+  final Function() saveCartCallback;
 
-  TextInputWidget(this.callback);
+  TextInputWidget(this.newItemCallback, this.saveCartCallback);
 
   @override
   _TextInputWidgetState createState() => _TextInputWidgetState();
@@ -14,8 +16,9 @@ class _TextInputWidgetState extends State<TextInputWidget> {
   final List<TextEditingController> controllers =
       List.generate(5, (i) => TextEditingController());
 
-  void click() {
-    widget.callback(List.generate(3, (index) => controllers[index].text));
+  void add() {
+    widget
+        .newItemCallback(List.generate(3, (index) => controllers[index].text));
     for (TextEditingController controller in controllers) {
       controller.clear();
     }
@@ -41,14 +44,20 @@ class _TextInputWidgetState extends State<TextInputWidget> {
                       labelText: (index == 0)
                           ? "Item"
                           : (index == 1)
-                              ? "Quantity (numbers only)"
-                              : "Unit (if necessary)",
+                              ? "Quantity"
+                              : "Unit",
                     )));
           }),
           IconButton(
-            onPressed: click,
+            onPressed: add,
             icon: Icon(Icons.add),
             tooltip: "Add item",
+            splashColor: Colors.green,
+          ),
+          IconButton(
+            onPressed: widget.saveCartCallback,
+            icon: Icon(Icons.send),
+            tooltip: "Send list",
             splashColor: Colors.green,
           )
         ]));

@@ -1,4 +1,6 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class CartItem {
   int quantity;
@@ -15,12 +17,41 @@ class CartItem {
   void changeUnit(String newUnit) {
     unit = newUnit;
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'quantity': quantity,
+      'name': name,
+      'unit': unit,
+    };
+  }
+}
+
+class Cart {
+  final String? user;
+  final List<CartItem> listItems;
+  late DatabaseReference _id;
+  bool inProgress = false;
+  Cart(this.user, this.listItems);
+
+  void setId(DatabaseReference id) {
+    _id = id;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user,
+      'inProgress': inProgress,
+      'listItems':
+          List.generate(listItems.length, (index) => listItems[index].toJson()),
+    };
+  }
 }
 
 class CartList extends StatefulWidget {
-  final List<CartItem> listItems;
+  final Cart cart;
 
-  CartList(this.listItems);
+  CartList(this.cart);
 
   @override
   _CartListState createState() => _CartListState();
@@ -36,16 +67,16 @@ class _CartListState extends State<CartList> {
 
   void deleteItem(CartItem item) {
     setState(() {
-      widget.listItems.remove(item);
+      widget.cart.listItems.remove(item);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: widget.listItems.length,
+        itemCount: widget.cart.listItems.length,
         itemBuilder: (context, index) {
-          var item = widget.listItems[index];
+          var item = widget.cart.listItems[index];
           return Card(
               child: Row(
             children: <Widget>[
@@ -61,7 +92,7 @@ class _CartListState extends State<CartList> {
                     ),
                     padding: EdgeInsets.fromLTRB(0, 0, 10, 0)),
                 IconButton(
-                    icon: Icon(Icons.edit),
+                    icon: Icon(Icons.plus_one),
                     onPressed: () =>
                         changeNumber(item.changeNumber), // update this later
                     color: Colors.green,

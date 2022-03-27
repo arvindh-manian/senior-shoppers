@@ -31,9 +31,10 @@ dependencies:
     sdk: flutter
 
   # Firebase
-  google_sign_in: ^5.0.1
-
+  firebase_database: ^9.0.8
+  firebase_core: ^1.13.1
   # Auth
+  google_sign_in: ^5.0.1
 
   # Stacked State Management
 

@@ -18,7 +18,6 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         loggedIn = true;
         user = userData as GoogleSignInAccount;
-        print(user?.displayName);
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => OrderingPage(user)));
       });
