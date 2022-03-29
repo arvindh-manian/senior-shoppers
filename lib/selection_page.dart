@@ -30,7 +30,6 @@ class _SelectionPageState extends State<SelectionPage> {
 
   @override
   Widget build(BuildContext context) {
-    assert(widget.user != null);
     return Scaffold(
         appBar: AppBar(title: Text("Choose Role")),
         body: Container(

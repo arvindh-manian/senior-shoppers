@@ -21,10 +21,6 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {
         loggedIn = true;
         user = userData as GoogleSignInAccount;
-        print(user == null);
-        if (user != null) {
-          print(user?.id);
-        }
         saveUser(user);
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => SelectionPage(user)));
