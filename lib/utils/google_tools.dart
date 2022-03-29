@@ -5,6 +5,7 @@ Map<String, dynamic> userToJson(GoogleSignInAccount user) {
     'displayName': user.displayName,
     'email': user.email,
     'photoUrl': user.photoUrl,
-    'serverAuthCode': user.serverAuthCode
+    'serverAuthCode': user.serverAuthCode,
+    'id': user.id
   };
 }

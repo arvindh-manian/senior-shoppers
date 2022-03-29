@@ -5,7 +5,7 @@ import 'ordering_page.dart';
 
 class SelectionPage extends StatefulWidget {
   late GoogleSignInAccount? user;
-  SelectionPage(this.user) {
+  SelectionPage({required this.user}) {
     user = this.user;
   }
 
@@ -23,8 +23,10 @@ class _SelectionPageState extends State<SelectionPage> {
 
   void order() {
     setState(() {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => OrderingPage(widget.user)));
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => OrderingPage(user: widget.user)));
     });
   }
 

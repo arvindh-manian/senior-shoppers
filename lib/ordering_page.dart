@@ -7,8 +7,8 @@ import 'text_input_widget.dart';
 class OrderingPage extends StatefulWidget {
   final GoogleSignInAccount? user;
   late Cart cart;
-  OrderingPage(this.user) {
-    cart = Cart(user?.id, <CartItem>[]);
+  OrderingPage({required this.user}) {
+    cart = Cart(user: user?.id, listItems: <CartItem>[]);
   }
 
   @override
@@ -33,7 +33,7 @@ class _OrderingPageState extends State<OrderingPage> {
         appBar: AppBar(title: Text("Senior Shoppers")),
         body: Column(
           children: <Widget>[
-            Expanded(child: CartList(widget.cart)),
+            Expanded(child: CartDisplay(cart: widget.cart)),
             TextInputWidget(newItem, sendCart),
           ],
         ));

@@ -23,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
         user = userData as GoogleSignInAccount;
         saveUser(user);
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => SelectionPage(user)));
+            MaterialPageRoute(builder: (context) => SelectionPage(user: user)));
       });
     });
   }
