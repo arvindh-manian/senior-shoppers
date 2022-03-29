@@ -25,7 +25,6 @@ class _OrderingPageState extends State<OrderingPage> {
 
   void sendCart() {
     widget.cart.setId(saveCart(widget.cart));
-    print("success");
   }
 
   @override
