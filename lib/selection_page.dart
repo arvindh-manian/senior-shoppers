@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:senior_shoppers/ordering_page.dart';
 import 'delivering_page.dart';
 
@@ -14,8 +15,11 @@ class SelectionPage extends StatefulWidget {
 class _SelectionPageState extends State<SelectionPage> {
   void deliver() {
     setState(() {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (context) => DeliveringPage(widget.user)));
+      Navigator.push(
+          context,
+          PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: DeliveringPage(widget.user)));
     });
   }
 
@@ -73,8 +77,9 @@ class _SelectionPageState extends State<SelectionPage> {
                           onPressed: () => order(context).then((onValue) {
                                 Navigator.push(
                                     (context),
-                                    MaterialPageRoute(
-                                        builder: (context) => OrderingPage(
+                                    PageTransition(
+                                        type: PageTransitionType.bottomToTop,
+                                        child: OrderingPage(
                                             user: widget.user,
                                             address: onValue)));
                               }),

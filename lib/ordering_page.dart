@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'database.dart';
@@ -24,8 +25,18 @@ class _OrderingPageState extends State<OrderingPage> {
     });
   }
 
-  void sendCart() {
+  sendCart() {
     widget.cart.setId(saveCart(widget.cart));
+    return AwesomeDialog(
+      context: context,
+      animType: AnimType.LEFTSLIDE,
+      headerAnimationLoop: false,
+      dialogType: DialogType.SUCCES,
+      showCloseIcon: true,
+      title: 'Success!',
+      desc: 'Your cart has been added to the current queue',
+      btnOkIcon: Icons.check_circle,
+    ).show();
   }
 
   @override

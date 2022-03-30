@@ -1,6 +1,7 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:senior_shoppers/database.dart';
 
 class CartItem {
@@ -187,8 +188,11 @@ class CartListDisplay extends StatefulWidget {
 
 class _CartListDisplayState extends State<CartListDisplay> {
   void cartHandler({required Cart cart}) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => RenderCart(cart: cart)));
+    Navigator.push(
+        context,
+        PageTransition(
+            type: PageTransitionType.bottomToTop,
+            child: RenderCart(cart: cart)));
   }
 
   @override
