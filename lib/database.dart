@@ -33,6 +33,7 @@ Future<List<Cart>> getAllCarts() async {
     _['listItems'] = cart['listItems'];
     _['inProgress'] = cart['inProgress'];
     _['user'] = cart['user'];
+    _['address'] = cart['address'];
     carts.add(Cart.fromJson(_));
   });
   return carts;

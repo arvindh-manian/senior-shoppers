@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:senior_shoppers/ordering_page.dart';
 import 'delivering_page.dart';
-import 'ordering_page.dart';
 
 class SelectionPage extends StatefulWidget {
-  late GoogleSignInAccount? user;
-  SelectionPage({required this.user}) {
-    user = this.user;
-  }
+  final GoogleSignInAccount? user;
+  const SelectionPage({required this.user});
 
   @override
   State<SelectionPage> createState() => _SelectionPageState();
@@ -21,13 +19,28 @@ class _SelectionPageState extends State<SelectionPage> {
     });
   }
 
-  void order() {
-    setState(() {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => OrderingPage(user: widget.user)));
-    });
+  final controller = TextEditingController();
+
+  Future<dynamic> order(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Enter delivery address"),
+            content: TextField(
+              controller: controller,
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                elevation: 5.0,
+                child: Text("Submit"),
+                onPressed: () {
+                  Navigator.of(context).pop(controller.text.toString());
+                },
+              )
+            ],
+          );
+        });
   }
 
   @override
@@ -57,7 +70,14 @@ class _SelectionPageState extends State<SelectionPage> {
                   child: Padding(
                       padding: EdgeInsets.fromLTRB(75, 38, 75, 212),
                       child: ElevatedButton(
-                          onPressed: order,
+                          onPressed: () => order(context).then((onValue) {
+                                Navigator.push(
+                                    (context),
+                                    MaterialPageRoute(
+                                        builder: (context) => OrderingPage(
+                                            user: widget.user,
+                                            address: onValue)));
+                              }),
                           style: ElevatedButton.styleFrom(
                               primary: Colors.orange[200]),
                           child: Row(children: [

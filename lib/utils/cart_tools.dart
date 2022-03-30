@@ -30,10 +30,15 @@ class CartItem {
 
 class Cart {
   late String? user;
+  late String? address;
   late List<CartItem> listItems;
   late DatabaseReference _id;
   late bool inProgress = false;
-  Cart({required this.user, required this.listItems, this.inProgress = false});
+  Cart(
+      {required this.user,
+      required this.listItems,
+      this.inProgress = false,
+      required this.address});
 
   void setId(DatabaseReference id) {
     _id = id;
@@ -42,6 +47,7 @@ class Cart {
   Map<String, dynamic> toJson() {
     return {
       'user': user,
+      'address': address,
       'inProgress': inProgress,
       'listItems':
           List.generate(listItems.length, (index) => listItems[index].toJson()),
@@ -50,6 +56,7 @@ class Cart {
 
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
       user: json['user'],
+      address: json['address'],
       listItems: List.generate(
           json['listItems'].length,
           ((index) => CartItem(
@@ -60,6 +67,50 @@ class Cart {
 
   DatabaseReference getId() {
     return _id;
+  }
+}
+
+class RenderCart extends StatefulWidget {
+  final Cart cart;
+  const RenderCart({required this.cart});
+
+  @override
+  State<RenderCart> createState() => _RenderCartState();
+}
+
+class _RenderCartState extends State<RenderCart> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(title: Text("Confirm Choice")),
+        body: ListView.builder(
+            itemCount: widget.cart.listItems.length,
+            itemBuilder: (context, index) {
+              var item = widget.cart.listItems[index];
+              return Card(
+                  child: Row(
+                children: <Widget>[
+                  Expanded(
+                      child: ListTile(
+                    title: Text(item.name),
+                  )),
+                  Row(children: <Widget>[
+                    Container(
+                        child: Text(
+                          item.quantity.toString() + " " + item.unit,
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0)),
+                  ])
+                ],
+              ));
+            },
+            shrinkWrap: true),
+        floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            child: Icon(Icons.check),
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.green));
   }
 }
 
@@ -135,6 +186,11 @@ class CartListDisplay extends StatefulWidget {
 }
 
 class _CartListDisplayState extends State<CartListDisplay> {
+  void cartHandler({required Cart cart}) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => RenderCart(cart: cart)));
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -154,21 +210,34 @@ class _CartListDisplayState extends State<CartListDisplay> {
                       var item = widget.cartList[index];
                       var user = users_by_id[item.user];
                       return Card(
-                          child: Row(children: [
-                        Expanded(
-                            flex: 2,
-                            child: Column(children: [
-                              Text(item.listItems.length.toString(),
-                                  style: TextStyle(fontSize: 30)),
-                              const Text("item(s)")
-                            ])),
-                        Expanded(flex: 3, child: Text(user['displayName'])),
-                        Expanded(
-                            child: Image.network(
-                          user!['photoUrl'],
-                          scale: 3,
-                        ))
-                      ]));
+                          child: InkWell(
+                              onTap: () => cartHandler(cart: item),
+                              child: Row(children: [
+                                Expanded(
+                                    flex: 2,
+                                    child: Column(children: [
+                                      Text(item.listItems.length.toString(),
+                                          style: TextStyle(fontSize: 30)),
+                                      const Text("item(s)")
+                                    ])),
+                                Expanded(
+                                    flex: 3,
+                                    child: Column(children: [
+                                      Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(user['displayName'])),
+                                      Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(item.address.toString()))
+                                    ])),
+                                Expanded(
+                                    child: CircleAvatar(
+                                  radius: 35,
+                                  backgroundImage: NetworkImage(
+                                    user!['photoUrl'],
+                                  ),
+                                ))
+                              ])));
                     })));
           } else {
             return Scaffold(

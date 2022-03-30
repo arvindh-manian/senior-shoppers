@@ -17,8 +17,11 @@ class _TextInputWidgetState extends State<TextInputWidget> {
       List.generate(5, (i) => TextEditingController());
 
   void add() {
-    widget
-        .newItemCallback(List.generate(3, (index) => controllers[index].text));
+    var ret = List.generate(3, (index) => controllers[index].text);
+    if (ret[2] == '') {
+      ret[2] = ret[0];
+    }
+    widget.newItemCallback(ret);
     for (TextEditingController controller in controllers) {
       controller.clear();
     }

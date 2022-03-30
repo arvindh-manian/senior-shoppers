@@ -6,9 +6,10 @@ import 'text_input_widget.dart';
 
 class OrderingPage extends StatefulWidget {
   final GoogleSignInAccount? user;
+  final String? address;
   late Cart cart;
-  OrderingPage({required this.user}) {
-    cart = Cart(user: user?.id, listItems: <CartItem>[]);
+  OrderingPage({required this.user, required this.address}) {
+    cart = Cart(user: user?.id, listItems: <CartItem>[], address: address);
   }
 
   @override
