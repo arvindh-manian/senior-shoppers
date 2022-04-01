@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:senior_shoppers/utils/cart_tools.dart';
@@ -31,10 +33,14 @@ Future<List<Cart>> getAllCarts() async {
     var cart = value as Map;
     Map<String, dynamic> _ = {};
     _['listItems'] = cart['listItems'];
-    _['inProgress'] = cart['inProgress'];
+    _['deliverer'] = cart['deliverer'];
     _['user'] = cart['user'];
     _['address'] = cart['address'];
-    carts.add(Cart.fromJson(_));
+    _['isFinished'] = cart['isFinished'];
+
+    Cart ret = Cart.fromJson(_);
+    ret.setId(databaseReference.child('carts/' + key));
+    carts.add(ret);
   });
   return carts;
 }
@@ -60,4 +66,12 @@ Future<Map<String, dynamic>> getUser(String? id) async {
     return _;
   }
   throw Exception("No user found");
+}
+
+void changeCart(DatabaseReference id, String param, dynamic newVal) async {
+  if (id != null) {
+    id.update({param: newVal});
+  } else {
+    throw Exception("Cart not found");
+  }
 }

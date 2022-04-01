@@ -1,21 +1,20 @@
-// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+// ignore_for_file: prefer_const_constructors_in_immutables, use_key_in_widget_constructors, prefer_const_constructors
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:senior_shoppers/database.dart';
 import 'package:senior_shoppers/utils/cart_tools.dart';
 
-class DeliveringPage extends StatefulWidget {
-  final GoogleSignInAccount? user;
-  const DeliveringPage(this.user);
+class CurrentDeliveriesPage extends StatefulWidget {
+  final String? user;
+  CurrentDeliveriesPage({required this.user});
 
   @override
-  State<DeliveringPage> createState() => _DeliveringPageState();
+  State<CurrentDeliveriesPage> createState() => _CurrentDeliveriesPageState();
 }
 
-class _DeliveringPageState extends State<DeliveringPage> {
+class _CurrentDeliveriesPageState extends State<CurrentDeliveriesPage> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -36,7 +35,7 @@ class _DeliveringPageState extends State<DeliveringPage> {
             } else if (snapshot.hasData) {
               List<Cart> lst = [];
               for (Cart crt in snapshot.data as List<Cart>) {
-                if (crt.deliverer == "") {
+                if (crt.deliverer == widget.user && crt.isFinished == false) {
                   lst.add(crt);
                 }
               }
@@ -49,34 +48,19 @@ class _DeliveringPageState extends State<DeliveringPage> {
                             type: PageTransitionType.bottomToTop,
                             child: RenderCart(
                                 cart: cart,
-                                user: widget.user?.id,
+                                user: widget.user,
                                 voidCallback: () {
-                                  if (cart.user == widget.user?.id) {
-                                    return AwesomeDialog(
-                                      context: context,
-                                      animType: AnimType.LEFTSLIDE,
-                                      headerAnimationLoop: false,
-                                      dialogType: DialogType.ERROR,
-                                      showCloseIcon: true,
-                                      title: 'Error!',
-                                      desc: "You cannot claim your own cart",
-                                      btnOkIcon: Icons.error,
-                                    ).show();
-                                  } else {
-                                    changeCart(cart.getId(), 'deliverer',
-                                        widget.user?.id);
-                                    cart.deliverer = widget.user?.id;
-                                    return AwesomeDialog(
-                                      context: context,
-                                      animType: AnimType.LEFTSLIDE,
-                                      headerAnimationLoop: false,
-                                      dialogType: DialogType.SUCCES,
-                                      showCloseIcon: true,
-                                      title: 'Success!',
-                                      desc: "You've claimed this cart!",
-                                      btnOkIcon: Icons.check_circle,
-                                    ).show();
-                                  }
+                                  changeCart(cart.getId(), 'isFinished', true);
+                                  return AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.LEFTSLIDE,
+                                    headerAnimationLoop: false,
+                                    dialogType: DialogType.SUCCES,
+                                    showCloseIcon: true,
+                                    title: 'Success!',
+                                    desc: "You've marked this cart as complete",
+                                    btnOkIcon: Icons.check_circle,
+                                  ).show();
                                 })));
                   });
             } else {

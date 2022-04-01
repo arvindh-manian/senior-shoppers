@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:flutter/material.dart';
 import 'package:senior_shoppers/database.dart';
 import 'package:senior_shoppers/selection_page.dart';
@@ -12,7 +14,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   bool loggedIn = false;
   GoogleSignInAccount? user;
-  GoogleSignIn _googleSignIn = GoogleSignIn();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   TextEditingController controller = TextEditingController();
 
   void click() async {

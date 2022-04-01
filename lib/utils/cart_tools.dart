@@ -1,7 +1,7 @@
+// ignore_for_file: prefer_const_constructors, use_key_in_widget_constructors
+
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:page_transition/page_transition.dart';
 import 'package:senior_shoppers/database.dart';
 
 class CartItem {
@@ -34,12 +34,14 @@ class Cart {
   late String? address;
   late List<CartItem> listItems;
   late DatabaseReference _id;
-  late bool inProgress = false;
+  late String? deliverer = "";
+  late bool isFinished;
   Cart(
       {required this.user,
       required this.listItems,
-      this.inProgress = false,
-      required this.address});
+      this.deliverer = "",
+      required this.address,
+      this.isFinished = false});
 
   void setId(DatabaseReference id) {
     _id = id;
@@ -49,7 +51,8 @@ class Cart {
     return {
       'user': user,
       'address': address,
-      'inProgress': inProgress,
+      'deliverer': deliverer,
+      'isFinished': isFinished,
       'listItems':
           List.generate(listItems.length, (index) => listItems[index].toJson()),
     };
@@ -58,13 +61,14 @@ class Cart {
   factory Cart.fromJson(Map<String, dynamic> json) => Cart(
       user: json['user'],
       address: json['address'],
+      isFinished: json['isFinished'],
       listItems: List.generate(
           json['listItems'].length,
           ((index) => CartItem(
               name: json['listItems'][index]['name'],
               quantity: json['listItems'][index]['quantity'],
               unit: json['listItems'][index]['unit']))),
-      inProgress: json['inProgress']);
+      deliverer: json['deliverer']);
 
   DatabaseReference getId() {
     return _id;
@@ -73,13 +77,20 @@ class Cart {
 
 class RenderCart extends StatefulWidget {
   final Cart cart;
-  const RenderCart({required this.cart});
+  final String? user;
+  final Function voidCallback;
+  const RenderCart(
+      {required this.cart, required this.user, required this.voidCallback});
 
   @override
   State<RenderCart> createState() => _RenderCartState();
 }
 
 class _RenderCartState extends State<RenderCart> {
+  void vallback() {
+    widget.voidCallback();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +119,7 @@ class _RenderCartState extends State<RenderCart> {
             },
             shrinkWrap: true),
         floatingActionButton: FloatingActionButton(
-            onPressed: () {},
+            onPressed: vallback,
             child: Icon(Icons.check),
             backgroundColor: Colors.white,
             foregroundColor: Colors.green));
@@ -179,8 +190,9 @@ class _CartDisplayState extends State<CartDisplay> {
 
 class CartListDisplay extends StatefulWidget {
   final List<Cart> cartList;
+  final Function callback;
 
-  const CartListDisplay({required this.cartList});
+  const CartListDisplay({required this.cartList, required this.callback});
 
   @override
   State<CartListDisplay> createState() => _CartListDisplayState();
@@ -188,67 +200,69 @@ class CartListDisplay extends StatefulWidget {
 
 class _CartListDisplayState extends State<CartListDisplay> {
   void cartHandler({required Cart cart}) {
-    Navigator.push(
-        context,
-        PageTransition(
-            type: PageTransitionType.bottomToTop,
-            child: RenderCart(cart: cart)));
+    widget.callback(cart);
   }
 
+// TODO: Handle empty list
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getAllUsers(widget.cartList),
-        builder: (BuildContext context,
-            AsyncSnapshot<List<Map<String?, dynamic>>> snapshot) {
-          if (snapshot.hasData) {
-            return Scaffold(
-                appBar: AppBar(title: Text("Select Cart")),
-                body: ListView.builder(
-                    itemCount: widget.cartList.length,
-                    itemBuilder: ((context, index) {
-                      var users_by_id = {};
-                      snapshot.data?.forEach((element) {
-                        users_by_id[element['id']] = element;
-                      });
-                      var item = widget.cartList[index];
-                      var user = users_by_id[item.user];
-                      return Card(
-                          child: InkWell(
-                              onTap: () => cartHandler(cart: item),
-                              child: Row(children: [
-                                Expanded(
-                                    flex: 2,
-                                    child: Column(children: [
-                                      Text(item.listItems.length.toString(),
-                                          style: TextStyle(fontSize: 30)),
-                                      const Text("item(s)")
-                                    ])),
-                                Expanded(
-                                    flex: 3,
-                                    child: Column(children: [
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(user['displayName'])),
-                                      Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Text(item.address.toString()))
-                                    ])),
-                                Expanded(
-                                    child: CircleAvatar(
-                                  radius: 35,
-                                  backgroundImage: NetworkImage(
-                                    user!['photoUrl'],
-                                  ),
-                                ))
-                              ])));
-                    })));
-          } else {
-            return Scaffold(
-              appBar: AppBar(title: Text("Select Cart")),
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-        });
+    return widget.cartList.isEmpty
+        ? Scaffold(
+            appBar: AppBar(title: Text("Select Cart")),
+            body: Center(child: Text("No Carts Found")))
+        : FutureBuilder(
+            future: getAllUsers(widget.cartList),
+            builder: (BuildContext context,
+                AsyncSnapshot<List<Map<String?, dynamic>>> snapshot) {
+              if (snapshot.hasData) {
+                return Scaffold(
+                    appBar: AppBar(title: Text("Select Cart")),
+                    body: ListView.builder(
+                        itemCount: widget.cartList.length,
+                        itemBuilder: ((context, index) {
+                          var usersById = {};
+                          snapshot.data?.forEach((element) {
+                            usersById[element['id']] = element;
+                          });
+                          var item = widget.cartList[index];
+                          var user = usersById[item.user];
+                          return Card(
+                              child: InkWell(
+                                  onTap: () => cartHandler(cart: item),
+                                  child: Row(children: [
+                                    Expanded(
+                                        flex: 2,
+                                        child: Column(children: [
+                                          Text(item.listItems.length.toString(),
+                                              style: TextStyle(fontSize: 30)),
+                                          const Text("item(s)")
+                                        ])),
+                                    Expanded(
+                                        flex: 3,
+                                        child: Column(children: [
+                                          Align(
+                                              alignment: Alignment.centerLeft,
+                                              child: Text(user['displayName'])),
+                                          Align(
+                                              alignment: Alignment.centerLeft,
+                                              child:
+                                                  Text(item.address.toString()))
+                                        ])),
+                                    Expanded(
+                                        child: CircleAvatar(
+                                      radius: 35,
+                                      backgroundImage: NetworkImage(
+                                        user!['photoUrl'],
+                                      ),
+                                    ))
+                                  ])));
+                        })));
+              } else {
+                return Scaffold(
+                  appBar: AppBar(title: Text("Select Cart")),
+                  body: Center(child: CircularProgressIndicator()),
+                );
+              }
+            });
   }
 }

@@ -1,3 +1,5 @@
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, must_be_immutable
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -18,25 +20,73 @@ class OrderingPage extends StatefulWidget {
 }
 
 class _OrderingPageState extends State<OrderingPage> {
-  void newItem(List<String> text) {
-    setState(() {
-      widget.cart.listItems.add(
-          CartItem(name: text[0], quantity: int.parse(text[1]), unit: text[2]));
-    });
+  newItem(List<String> text) {
+    if (text[1] == '') {
+      return AwesomeDialog(
+              context: context,
+              animType: AnimType.LEFTSLIDE,
+              headerAnimationLoop: false,
+              dialogType: DialogType.ERROR,
+              showCloseIcon: true,
+              title: 'Error',
+              desc: 'Enter valid quantity',
+              btnOkIcon: Icons.error)
+          .show();
+    } else if (int.parse(text[1]) <= 0) {
+      return AwesomeDialog(
+              context: context,
+              animType: AnimType.LEFTSLIDE,
+              headerAnimationLoop: false,
+              dialogType: DialogType.ERROR,
+              showCloseIcon: true,
+              title: 'Error',
+              desc: 'Quantity must be non-zero',
+              btnOkIcon: Icons.error)
+          .show();
+    } else if (text[0] == '') {
+      return AwesomeDialog(
+              context: context,
+              animType: AnimType.LEFTSLIDE,
+              headerAnimationLoop: false,
+              dialogType: DialogType.ERROR,
+              showCloseIcon: true,
+              title: 'Error',
+              desc: 'Enter valid name',
+              btnOkIcon: Icons.error)
+          .show();
+    } else {
+      setState(() {
+        widget.cart.listItems.add(CartItem(
+            name: text[0], quantity: int.parse(text[1]), unit: text[2]));
+      });
+    }
   }
 
   sendCart() {
-    widget.cart.setId(saveCart(widget.cart));
-    return AwesomeDialog(
-      context: context,
-      animType: AnimType.LEFTSLIDE,
-      headerAnimationLoop: false,
-      dialogType: DialogType.SUCCES,
-      showCloseIcon: true,
-      title: 'Success!',
-      desc: 'Your cart has been added to the current queue',
-      btnOkIcon: Icons.check_circle,
-    ).show();
+    if (widget.cart.listItems.isEmpty) {
+      return AwesomeDialog(
+              context: context,
+              animType: AnimType.LEFTSLIDE,
+              headerAnimationLoop: false,
+              dialogType: DialogType.ERROR,
+              showCloseIcon: true,
+              title: 'Error!',
+              desc: 'Cart cannot be empty',
+              btnOkIcon: Icons.error)
+          .show();
+    } else {
+      widget.cart.setId(saveCart(widget.cart));
+      return AwesomeDialog(
+        context: context,
+        animType: AnimType.LEFTSLIDE,
+        headerAnimationLoop: false,
+        dialogType: DialogType.SUCCES,
+        showCloseIcon: true,
+        title: 'Success!',
+        desc: 'Your cart has been added to the current queue',
+        btnOkIcon: Icons.check_circle,
+      ).show();
+    }
   }
 
   @override

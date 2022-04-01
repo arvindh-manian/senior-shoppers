@@ -1,6 +1,7 @@
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:senior_shoppers/utils/cart_tools.dart';
 
 class TextInputWidget extends StatefulWidget {
   final Function(List<String>) newItemCallback;
